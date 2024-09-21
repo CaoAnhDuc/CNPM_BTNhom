@@ -1,0 +1,281 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace QuanLyHoaDonTienDien
+{
+    // Lớp cơ sở cho khách hàng
+    abstract class KhachHang
+    {
+        public string MaKhachHang { get; set; }
+        public string HoTen { get; set; }
+        public string DiaChi { get; set; }
+        public double SoLuongKW { get; set; } // So luong KW tieu thuc
+        public double DonGia { get; set; }
+
+        // Phuong thuc tinh thanh tien, duoc ghi de boi cac lop con
+        public abstract double TinhThanhTien();
+    }
+
+    // Lớp khách hàng Việt Nam
+    class KhachHangVietNam : KhachHang
+    {
+        public string DoiTuongKhachHang { get; set; } // Sinh hoat, Kinh doanh, San xuat
+        public double DinhMuc { get; set; }
+
+        public override double TinhThanhTien()
+        {
+            if (SoLuongKW <= DinhMuc)
+            {
+                return SoLuongKW * DonGia;
+            }
+            else
+            {
+                double tienDinhMuc = DinhMuc * DonGia;
+                double tienVuotDinhMuc = (SoLuongKW - DinhMuc) * DonGia * 2.5;
+                return tienDinhMuc + tienVuotDinhMuc;
+            }
+        }
+
+        // Phuong thuc xuat thong tin khách hàng Việt Nam
+        public void XuatThongTin()
+        {
+            Console.WriteLine($"Ma KH: {MaKhachHang}, Ho ten: {HoTen}, Dia chi: {DiaChi}, Doi tuong: {DoiTuongKhachHang}, So KW: {SoLuongKW}, Don gia: {DonGia}, Dinh muc: {DinhMuc}, Thanh tien: {TinhThanhTien()} VND");
+        }
+    }
+
+    // Lớp khách hàng nước ngoài
+    class KhachHangNuocNgoai : KhachHang
+    {
+        public string QuocTich { get; set; }
+
+        public override double TinhThanhTien()
+        {
+            return SoLuongKW * DonGia;
+        }
+
+        // Phuong thuc xuat thong tin khách hàng nước ngoài
+        public void XuatThongTin()
+        {
+            Console.WriteLine($"Ma KH: {MaKhachHang}, Ho ten: {HoTen}, Dia chi: {DiaChi}, Quoc tich: {QuocTich}, So KW: {SoLuongKW}, Don gia: {DonGia}, Thanh tien: {TinhThanhTien()} VND");
+        }
+    }
+
+    // Lớp chương trình chính
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Khởi tạo danh sách khách hàng có sẵn
+            List<KhachHang> danhSachKhachHang = new List<KhachHang>
+            {
+                new KhachHangVietNam
+                {
+                    MaKhachHang = "VN001",
+                    HoTen = "Nguyen Van A",
+                    DiaChi = "Ha Noi",
+                    DoiTuongKhachHang = "Sinh hoat",
+                    SoLuongKW = 120,
+                    DonGia = 2000,
+                    DinhMuc = 100
+                },
+                new KhachHangVietNam
+                {
+                    MaKhachHang = "VN002",
+                    HoTen = "Tran Thi B",
+                    DiaChi = "Ho Chi Minh",
+                    DoiTuongKhachHang = "Kinh doanh",
+                    SoLuongKW = 150,
+                    DonGia = 2000,
+                    DinhMuc = 120
+                },
+                new KhachHangNuocNgoai
+                {
+                    MaKhachHang = "NN001",
+                    HoTen = "John Smith",
+                    DiaChi = "USA",
+                    QuocTich = "My",
+                    SoLuongKW = 150,
+                    DonGia = 3000
+                },
+                new KhachHangNuocNgoai
+                {
+                    MaKhachHang = "NN002",
+                    HoTen = "Maria Garcia",
+                    DiaChi = "Spain",
+                    QuocTich = "Tay Ban Nha",
+                    SoLuongKW = 100,
+                    DonGia = 3000
+                }
+            };
+
+            bool tiepTuc = true;
+
+            while (tiepTuc)
+            {
+                Console.WriteLine("\n===== Quan Ly Hoa Don Tien Dien =====");
+                Console.WriteLine("1. Nhap khach hang Viet Nam");
+                Console.WriteLine("2. Nhap khach hang Nuoc Ngoai");
+                Console.WriteLine("3. Xuat danh sach hoa don");
+                Console.WriteLine("4. Tinh tong so KW tieu thuc cho tung loai KH");
+                Console.WriteLine("5. Tinh trung binh thanh tien cua KH Nuoc Ngoai");
+                Console.WriteLine("6. Thoat");
+                Console.Write("Lua chon cua ban: ");
+                string luaChon = Console.ReadLine();
+
+                switch (luaChon)
+                {
+                    case "1":
+                        KhachHangVietNam khVN = new KhachHangVietNam();
+                        // Phuong thuc nhap thong tin
+                        nhapKhachHangVietNam(khVN);
+                        danhSachKhachHang.Add(khVN);
+                        Console.WriteLine("Da them khach hang Viet Nam thanh cong.");
+                        break;
+                    case "2":
+                        KhachHangNuocNgoai khNN = new KhachHangNuocNgoai();
+                        // Phuong thuc nhap thong tin
+                        nhapKhachHangNuocNgoai(khNN);
+                        danhSachKhachHang.Add(khNN);
+                        Console.WriteLine("Da them khach hang Nuoc Ngoai thanh cong.");
+                        break;
+                    case "3":
+                        Console.WriteLine("\n--- Danh Sach Hoa Don ---");
+                        foreach (var kh in danhSachKhachHang)
+                        {
+                            if (kh is KhachHangVietNam)
+                            {
+                                ((KhachHangVietNam)kh).XuatThongTin();
+                            }
+                            else if (kh is KhachHangNuocNgoai)
+                            {
+                                ((KhachHangNuocNgoai)kh).XuatThongTin();
+                            }
+                        }
+                        break;
+                    case "4":
+                        double tongKWVN = danhSachKhachHang
+                            .OfType<KhachHangVietNam>()
+                            .Sum(kh => kh.SoLuongKW);
+                        double tongKWNN = danhSachKhachHang
+                            .OfType<KhachHangNuocNgoai>()
+                            .Sum(kh => kh.SoLuongKW);
+                        Console.WriteLine($"\nTong so KW tieu thuc cua KH Viet Nam: {tongKWVN} KW");
+                        Console.WriteLine($"Tong so KW tieu thuc cua KH Nuoc Ngoai: {tongKWNN} KW");
+                        break;
+                    case "5":
+                        var danhSachNN = danhSachKhachHang.OfType<KhachHangNuocNgoai>().ToList();
+                        if (danhSachNN.Count > 0)
+                        {
+                            double tongThanhTienNN = danhSachNN.Sum(kh => kh.TinhThanhTien());
+                            double trungBinhThanhTienNN = tongThanhTienNN / danhSachNN.Count;
+                            Console.WriteLine($"\nTrung binh thanh tien cua KH Nuoc Ngoai: {trungBinhThanhTienNN} VND");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nKhong co KH Nuoc Ngoai trong danh sach.");
+                        }
+                        break;
+                    case "6":
+                        tiepTuc = false;
+                        Console.WriteLine("Cam on ban da su dung chuong trinh.");
+                        break;
+                    default:
+                        Console.WriteLine("Lua chon khong hop le. Vui long chon lai.");
+                        break;
+                }
+            }
+        }
+        List<KhachHang> danhSachKhachHang = new List<KhachHang>
+{
+    new KhachHangVietNam
+    {
+        MaKhachHang = "VN001",
+        HoTen = "Cao Anh Duc",
+        DiaChi = "Ha Noi",
+        DoiTuongKhachHang = "Sinh hoat",
+        SoLuongKW = 120,
+        DonGia = 2000,
+        DinhMuc = 100
+    },
+    new KhachHangVietNam
+    {
+        MaKhachHang = "VN002",
+        HoTen = "Nguyen Ngoc Duy",
+        DiaChi = "Ho Chi Minh",
+        DoiTuongKhachHang = "Kinh doanh",
+        SoLuongKW = 150,
+        DonGia = 2000,
+        DinhMuc = 120
+    },
+    new KhachHangNuocNgoai
+    {
+        MaKhachHang = "NN001",
+        HoTen = "John Smith",
+        DiaChi = "USA",
+        QuocTich = "My",
+        SoLuongKW = 150,
+        DonGia = 3000
+    },
+    new KhachHangNuocNgoai
+    {
+        MaKhachHang = "NN002",
+        HoTen = "Maria Garcia",
+        DiaChi = "Spain",
+        QuocTich = "Tay Ban Nha",
+        SoLuongKW = 100,
+        DonGia = 3000
+    }
+};
+
+        // Phuong thuc nhap thong tin khách hàng Việt Nam
+        static void nhapKhachHangVietNam(KhachHangVietNam khVN)
+        {
+            Console.Write("Nhap ma khach hang: ");
+            khVN.MaKhachHang = Console.ReadLine();
+            Console.Write("Nhap ho ten: ");
+            khVN.HoTen = Console.ReadLine();
+            Console.Write("Nhap dia chi: ");
+            khVN.DiaChi = Console.ReadLine();
+            Console.Write("Nhap doi tuong khach hang (Sinh hoat/Kinh doanh/San xuat): ");
+            khVN.DoiTuongKhachHang = Console.ReadLine();
+            khVN.SoLuongKW = nhapDouble("Nhap so luong KW tieu thu: ");
+            khVN.DonGia = nhapDouble("Nhap don gia: ");
+            khVN.DinhMuc = nhapDouble("Nhap dinh muc: ");
+        }
+
+        // Phuong thuc nhap thong tin khách hàng nước ngoài
+        static void nhapKhachHangNuocNgoai(KhachHangNuocNgoai khNN)
+        {
+            Console.Write("Nhap ma khach hang: ");
+            khNN.MaKhachHang = Console.ReadLine();
+            Console.Write("Nhap ho ten: ");
+            khNN.HoTen = Console.ReadLine();
+            Console.Write("Nhap dia chi: ");
+            khNN.DiaChi = Console.ReadLine();
+            Console.Write("Nhap quoc tich: ");
+            khNN.QuocTich = Console.ReadLine();
+            khNN.SoLuongKW = nhapDouble("Nhap so luong KW tieu thu: ");
+            khNN.DonGia = nhapDouble("Nhap don gia: ");
+        }
+
+        // Phuong thuc nhap gia tri double co kiem tra
+        static double nhapDouble(string thongBao)
+        {
+            double giaTri;
+            while (true)
+            {
+                Console.Write(thongBao);
+                string input = Console.ReadLine();
+                if (double.TryParse(input, out giaTri) && giaTri >= 0)
+                {
+                    return giaTri;
+                }
+                else
+                {
+                    Console.WriteLine("Gia tri khong hop le. Vui long nhap lai.");
+                }
+            }
+        }
+    }
+}
